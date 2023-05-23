@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 using namespace std;
-const int cols = 3;
+
 //Informacoes de cada ponto
 typedef struct matrizlista{
     int ponto;//numero do ponto
@@ -27,13 +27,15 @@ void iniciomatriz(matrizL *lista){
 }
 
 void menu(){
-    cout<<"========================================="<<endl;
-    cout<<"=1.Calcular linhas cortadas para apagao ="<<endl;
-    cout<<"=2.Mostra pontos e suas ligacao         ="<<endl;
-    cout<<"=3.Mostra Pontos de energia             ="<<endl;
-    cout<<"=4.Mostra os dados                      ="<<endl;
-    cout<<"=5.Sair                                 ="<<endl;
-    cout<<"========================================="<<endl;
+    cout<<"==========================================="<<endl;
+    cout<<"=1.Calcular linhas cortadas para apagao   ="<<endl;
+    cout<<"=2.Mostra matriz                          ="<<endl;
+    cout<<"=3.Mostra Pontos de energia               ="<<endl;
+    cout<<"=4.Mostra os dados                        ="<<endl;
+    cout<<"=5.Mostra ligacao de cada ponto           ="<<endl;
+    cout<<"=6.Ponto fica energia                     ="<<endl;
+    cout<<"=7.Sair                                   ="<<endl;
+    cout<<"==========================================="<<endl;
 }
 //nessa funcao estou induzindo os ponto que existem puxando seus dados de pontos.txt edeixando eles
 //em uma lista encadeada para que estejam conectados e possam se removidos ou alterado
@@ -97,13 +99,48 @@ void mostraEnergia(matrizL *lista){
     }
 }
 
-void mostraLiga(matrizL *lista, int vet[3]){
-    int i;
-    for(i=0; i<3; i++){
-        if(i==0){
-            vet[i]=3;
+void mostraLiga(int vet[], int tam){
+    vet[tam];
+    for(int i=0; i<tam; i++){
+       cout<<vet[i]<<" ";  
+    }
+    cout<<"\n";
+}
+
+void contador(int *numero, int vet[], int tamanho){
+    for(int i=0; i<tamanho; i++){
+        if(vet[i]==1){
+            *numero=*numero+1;
         }
-        cout<<vet[i];
+    }
+}
+
+void cortalinha(matrizL *lista, int vet[], int tam){
+    matriz *aux;
+    aux=lista->inicio;
+
+    int x=0, numero=0;
+
+    if(aux==NULL){
+        cout<<"ERRO!"<<endl;
+    }else{
+        while(aux!=NULL){
+            if(aux->energia==1){
+                contador(&numero, &vet[x], tam);
+            }
+            aux=aux->prox;
+            x++;
+        }
+    }
+    cout<<"Sera preciso corta: "<<numero<<" linhas para ter um apagao"<<endl;
+}
+
+void contaPonto(int vet[], int tam){
+    vet[tam];
+    for(int i=0; i<tam; i++){
+        if(vet[i]==1){
+            cout<<(i+1)<<" ";
+        }
     }
     cout<<"\n";
 }
@@ -116,18 +153,22 @@ int main(){
     iniciomatriz(&M1);
 
     carregarpontos(&M1, &tamanho);
-    tamanho=3;
-    int mat[tamanho][tamanho];
 
-    mat[0][0]=0;
-    mat[0][1]=0;
-    mat[0][2]=0;
-    mat[1][0]=1;
-    mat[1][1]=1;
-    mat[1][2]=1;
-    mat[2][0]=0;
-    mat[2][1]=0;
-    mat[2][2]=0;
+    int mat[tamanho][tamanho];
+    // |1 2 3 4 5 6
+    //1|0 1 0 0 1 0
+    //2|1 0 1 0 1 0
+    //3|0 1 0 1 0 0
+    //4|0 1 1 0 1 1
+    //5|1 1 0 1 0 0
+    //6|0 0 0 1 0 0
+    //     1           2            3           4             5            6
+    mat[0][0]=0; mat[0][1]=1; mat[0][2]=0; mat[0][3]=0; mat[0][4]=1; mat[0][5]=0;
+    mat[1][0]=1; mat[1][1]=0; mat[1][2]=1; mat[1][3]=0; mat[1][4]=1; mat[1][5]=0;
+    mat[2][0]=0; mat[2][1]=1; mat[2][2]=0; mat[2][3]=1; mat[2][4]=0; mat[2][5]=0;
+    mat[3][0]=0; mat[3][1]=0; mat[3][2]=1; mat[3][3]=0; mat[3][4]=1; mat[3][5]=1;
+    mat[4][0]=1; mat[4][1]=1; mat[4][2]=0; mat[4][3]=1; mat[4][4]=0; mat[4][5]=0;
+    mat[5][0]=0; mat[5][1]=0; mat[5][2]=0; mat[5][3]=1; mat[5][4]=0; mat[5][5]=0;
 
 
     for(;;){
@@ -137,16 +178,20 @@ int main(){
         system("cls");
         switch(opcao){
             case 1:
-
+                cortalinha(&M1, mat[0], tamanho);
+                system("pause");
             break;
             case 2:
+                cout<<"         ";
                 for(i=0; i<tamanho; i++){
-                    mostraLiga(&M1, mat[i]);
+                    cout<<(i+1)<<" ";
+                }
+                cout<<endl;
+                for(i=0; i<tamanho; i++){
+                    cout<<"Ponto "<<(i+1)<<"| ";
+                    mostraLiga(mat[i], tamanho);
                 }
                 system("pause");
-                cout<<mat[0][0];
-                system("pause");
-
             break;
             case 3:
                 mostraEnergia(&M1);
@@ -156,8 +201,18 @@ int main(){
                 mostraTotal(&M1);
                 system("pause");
             break;
-
             case 5:
+                cout<<"         Pontos conectados"<<endl;
+                for(i=0; i<tamanho; i++){
+                    cout<<"Ponto "<<(i+1)<<"| ";
+                    contaPonto(mat[i], tamanho);
+                }
+                system("pause");
+            break;
+            case 6:
+                 
+            break;
+            case 7:
                 exit(0);
             break;
         }
