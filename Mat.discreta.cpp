@@ -33,8 +33,10 @@ void menu(){
     cout<<"=3.Mostra Pontos de energia               ="<<endl;
     cout<<"=4.Mostra os dados                        ="<<endl;
     cout<<"=5.Mostra ligacao de cada ponto           ="<<endl;
-    cout<<"=6.Ponto fica energia                     ="<<endl;
-    cout<<"=7.Sair                                   ="<<endl;
+    cout<<"=6.Ponto fica sem energia                 ="<<endl;
+    cout<<"=7.Alterar informacao do ponto            ="<<endl;
+    cout<<"=8.Alterar ligacoes do ponto              ="<<endl;
+    cout<<"=9.Sair                                   ="<<endl;
     cout<<"==========================================="<<endl;
 }
 //nessa funcao estou induzindo os ponto que existem puxando seus dados de pontos.txt edeixando eles
@@ -81,7 +83,7 @@ void mostraTotal(matrizL *lista){
         }
     }
 }
-
+//mostra todos os pontos
 void mostraEnergia(matrizL *lista){
     matriz *aux;
     aux=lista->inicio;
@@ -98,7 +100,7 @@ void mostraEnergia(matrizL *lista){
         }
     }
 }
-
+//mostra matriz completa dos garfos
 void mostraLiga(int vet[], int tam){
     vet[tam];
     for(int i=0; i<tam; i++){
@@ -106,7 +108,7 @@ void mostraLiga(int vet[], int tam){
     }
     cout<<"\n";
 }
-
+//conta os as linhas para corte
 void contador(int *numero, int vet[], int tamanho){
     for(int i=0; i<tamanho; i++){
         if(vet[i]==1){
@@ -114,7 +116,7 @@ void contador(int *numero, int vet[], int tamanho){
         }
     }
 }
-
+//ver onde é reservatorio e corta as linhas
 void cortalinha(matrizL *lista, int vet[], int tam){
     matriz *aux;
     aux=lista->inicio;
@@ -134,7 +136,7 @@ void cortalinha(matrizL *lista, int vet[], int tam){
     }
     cout<<"Sera preciso corta: "<<numero<<" linhas para ter um apagao"<<endl;
 }
-
+//mostra qual ponto liga com qual ponto
 void contaPonto(int vet[], int tam){
     vet[tam];
     for(int i=0; i<tam; i++){
@@ -144,9 +146,100 @@ void contaPonto(int vet[], int tam){
     }
     cout<<"\n";
 }
+//altera os dados dos pontos informados
+void alteraPonto(matrizL *lista){
+    matriz *aux;
+    aux=lista->inicio;
+
+    int x, opcao;
+
+    if(aux==NULL){
+        cout<<"Nenhum dado para se alterado!"<<endl;
+    }else{
+        cout<<"Informe o numero do ponto que deseja altera: ";
+        cin>>x;
+        while(aux!=NULL){
+            if(aux->ponto==x){
+                cout<<"Ponto:        "<<aux->ponto<<endl;
+                cout<<"nome:         "<<aux->nome<<endl;
+                cout<<"Reservatorio: "<<aux->energia<<" 0=ponto de controle, 1=reservatorio"<<endl<<endl;
+                cout<<"Deseja muda o nome: (1.sim/2.nao) ";
+                cin>>opcao;
+                if(opcao==1){
+                    cout<<"Digite um novo nome: ";
+                    cin>>aux->nome;
+                    opcao=0;
+                    cout<<"Suceso!"<<endl;
+                }
+                cout<<"Deseja altera para reservatorio ou deixa de se reservatorio: (1.sim/2.nao) ";
+                cin>>opcao;
+                if(opcao==1){
+                    if(aux->energia==1){
+                        aux->energia=0;
+                    }else{
+                        aux->energia=1;
+                    }
+                    cout<<"Suceso!"<<endl;
+                }
+            }
+            aux=aux->prox;
+        }
+        cout<<"Salvando dados novos...!"<<endl;
+    }
+}
+//altera as ligação dos pontos
+void alteraliga(int vet[], int tam){
+    vet[tam];
+    int opcao, ajuda, x;
+    cout<<"Pontos que esta conectado: ";
+    for(int i=0; i<tam; i++){
+       if(vet[i]==1){
+            cout<<(i+1)<<" ";
+        }
+    }
+    cout<<"\n Deseja adciona um nova ligacao: (1.sim/2.nao) ";
+    cin>>opcao;
+    if(opcao==1){
+        cout<<"Liga com qual ponto: ";
+        cin>>ajuda;
+        for(int i=0; i<tam; i++){
+            if(i==ajuda && vet[i]==0){
+                vet[i]=1;
+                cout<<"sucesso!"<<endl;
+            }else{
+                cout<<"Ja existir essa ligacao"<<endl;
+            }
+        }
+        return;
+    }
+    opcao=0;
+    cout<<"\n Deseja remover um nova ligacao: (1.sim/2.nao) ";
+    cin>>opcao;
+    if(opcao==1){
+        cout<<"remover qual ponto: ";
+        cin>>ajuda;
+        for(int i=0; i<tam; i++){
+            if(i==ajuda && vet[i]==1){
+                vet[i]=0;
+                cout<<"sucesso!"<<endl;
+            }
+        }
+    }
+}
+//ponto fica sem energia
+void pontosemeneria(int vet[], int tam){
+    vet[tam];
+    int x=0;
+    for(int i=0; i<tam; i++){
+       if(vet[i]==1){
+            x+=1;
+        }
+    }
+    cout<<"Tem que corta "<<x<<" pontos para fica sem energia"<<endl;
+}
 
 int main(){
-    int opcao, tamanho=0, i, j;
+    int opcao, tamanho=0, i, ajuda;
 
     matrizL M1;
 
@@ -210,9 +303,24 @@ int main(){
                 system("pause");
             break;
             case 6:
-                 
+                cout<<"Qual ponto deseja verificar: ";
+                cin>>ajuda;
+                pontosemeneria(mat[ajuda], tamanho);
+                system("pause");
             break;
             case 7:
+                mostraTotal(&M1);
+                alteraPonto(&M1);
+                system("pause");
+            break;
+            case 8 :
+                mostraTotal(&M1);
+                cout<<"Qual ponto deseja altera: ";
+                cin>>ajuda;
+                alteraliga(mat[ajuda], tamanho);
+                system("pause");
+            break;
+            case 9:
                 exit(0);
             break;
         }
