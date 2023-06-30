@@ -109,32 +109,56 @@ void mostraLiga(int vet[], int tam){
     cout<<"\n";
 }
 //conta os as linhas para corte
-void contador(int *numero, int vet[], int tamanho){
-    for(int i=0; i<tamanho; i++){
+void contador(int *numero, int vet[], int tamanho, matriz *aux, int num){
+    int i=0;
+    for(i=0; i<tamanho; i++){
+        // cout<<i;
         if(vet[i]==1){
-            *numero=*numero+1;
+            // cout<<i+1;
+            while(aux!=NULL){
+            // cout<<i<<" "<<aux->nome<<endl;
+            if(aux->ponto==(i+1)){
+                if(aux->energia==1){
+                    if(aux->analisado==0){
+                        *numero=*numero+1;
+                        // cout<<aux->ponto<<" "<<*numero;
+                    }
+                    break;
+                }else{
+                    *numero=*numero+1;
+                    // cout<<aux->ponto<<" "<<*numero;
+                    break;
+                }
+            }
+                aux=aux->prox;
+            
+            }
+            // cout<<" ";
         }
     }
 }
 //ver onde é reservatorio e corta as linhas
-void cortalinha(matrizL *lista, int vet[], int tam){
-    matriz *aux;
+void cortalinha(matrizL *lista, int vet[], int tam, int numero, int *sal){
+    matriz *aux, *ini;
     aux=lista->inicio;
+    ini=lista->inicio;
 
-    int x=0, numero=0;
-
+    // numero+=1;
+    int cont=0;
     if(aux==NULL){
-        cout<<"ERRO!"<<endl;
+        cout<<"Nenhum ponto cadastrado!"<<endl;
     }else{
         while(aux!=NULL){
-            if(aux->energia==1){
-                contador(&numero, &vet[x], tam);
+            if(aux->energia==1 && aux->ponto==numero){
+                aux->analisado=1;
+                contador(&*sal, &vet[0], tam, ini, numero);
             }
             aux=aux->prox;
-            x++;
         }
     }
-    cout<<"Sera preciso corta: "<<numero<<" linhas para ter um apagao"<<endl;
+    if(numero==tam){
+        cout<<"Sera preciso corta: "<<*sal<<" linhas para ter um apagao"<<endl;
+    }
 }
 //mostra qual ponto liga com qual ponto
 void contaPonto(int vet[], int tam){
@@ -227,7 +251,22 @@ void alteraliga(int vet[], int tam){
     }
 }
 //ponto fica sem energia
-void pontosemeneria(int vet[], int tam){
+void pontosemeneria(int vet[], int tam, matrizL *lista, int ajuda){
+    matriz *aux;
+    aux=lista->inicio;
+    
+    if(aux==NULL){
+        cout<<"Nenhum ponto cadastrado!"<<endl;
+    }else{
+        while(aux!=NULL){
+            if(aux->energia==1 && aux->ponto==ajuda){
+                cout<<"Tem que corta 0 linha(s) para fica sem energia! Por ser Reservatorio"<<endl;
+                return;
+            }
+            aux=aux->prox;
+        }
+    }
+
     vet[tam];
     int x=0;
     for(int i=0; i<tam; i++){
@@ -235,13 +274,26 @@ void pontosemeneria(int vet[], int tam){
             x+=1;
         }
     }
-    cout<<"Tem que corta "<<x<<" pontos para fica sem energia"<<endl;
+    cout<<"Tem que corta "<<x<<" linha(s) para fica sem energia"<<endl;
+}
+
+void reset(matrizL *lista){
+    matriz *aux;
+    aux=lista->inicio;
+    
+    if(aux==NULL){
+    }else{
+        while(aux!=NULL){
+            aux->analisado=0;
+            aux=aux->prox;
+        }
+    }
 }
 
 int main(){
-    int opcao, tamanho=0, i, ajuda;
+    int opcao, tamanho=0, i, ajuda, sal=0;
 
-    matrizL M1;
+    matrizL M1, aux;
 
     iniciomatriz(&M1);
 
@@ -252,7 +304,7 @@ int main(){
     //1|0 1 0 0 1 0
     //2|1 0 1 0 1 0
     //3|0 1 0 1 0 0
-    //4|0 1 1 0 1 1
+    //4|0 0 1 0 1 1
     //5|1 1 0 1 0 0
     //6|0 0 0 1 0 0
     //     1           2            3           4             5            6
@@ -271,7 +323,12 @@ int main(){
         system("cls");
         switch(opcao){
             case 1:
-                cortalinha(&M1, mat[0], tamanho);
+                for(i=0; i<tamanho; i++){
+                    // cout<<"\n"<<i+1<<" ";
+                    cortalinha(&M1, mat[i], tamanho, (i+1), &sal);
+                }
+                reset(&M1);
+                sal=0;
                 system("pause");
             break;
             case 2:
@@ -305,7 +362,7 @@ int main(){
             case 6:
                 cout<<"Qual ponto deseja verificar: ";
                 cin>>ajuda;
-                pontosemeneria(mat[ajuda], tamanho);
+                pontosemeneria(mat[ajuda], tamanho, &M1, ajuda);
                 system("pause");
             break;
             case 7:
